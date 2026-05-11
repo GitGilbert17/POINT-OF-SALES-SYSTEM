@@ -1,0 +1,102 @@
+ <!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"
+  />
+      <title>Sistema de Punto de Venta (POS)</title> 
+      <link rel="stylesheet" href="../css/pos-styles.css" />
+  </head>
+
+  <body>
+      <!-- Header -->
+<header class="header">
+        <a href="MainDashboard.html" class="logo" aria-label="Logo del sistema POS">POS Web</a>
+
+          <section class="user-info" aria-label="Información del usuario">
+              <div class="user-details">
+                  <strong id="userName">Usuario</strong>
+                  <span class="role" id="userRole">Rol</span>
+              </div>
+              <div class="user-avatar" id="userAvatar" aria-hidden="true">US</div>
+          </section>
+      </header>
+
+      <!-- Stats bar (admin only) -->
+      <div id="statsBar" class="stats-bar" style="display:none; background: white; padding: 1rem 2rem; border-bottom: 1px solid #e5e7eb; display: flex; gap: 2rem; justify-content: center;"></div>
+
+      <!-- Main content -->
+      <main class="container">
+          <!-- Products panel -->
+          <section class="products-section" aria-label="Catálogo de
+  productos">
+              <!-- Search bar -->
+              <div class="search-bar">
+                  <label for="searchInput" class="visually-hidden">Buscar
+  producto</label>
+                  <input
+                      type="search"
+                      id="searchInput"
+                      placeholder="Buscar producto…"
+                      aria-label="Buscar producto"
+                  />
+                  <button type="button" class="filter-btn"
+  aria-haspopup="dialog">
+                      Categorías
+                  </button>
+              </div>
+
+              <!-- Grid de productos -->
+              <div class="products-grid" id="productsGrid" role="region"
+  aria-live="polite">
+                  <!-- Los productos se insertarán aquí con JavaScript -->
+              </div>
+          </section>
+
+          <!-- Cart panel -->
+          <section class="cart-section" aria-label="Carrito de compra">
+              <header class="cart-header">
+                  <h2 class="cart-title">Carrito</h2>
+              </header>
+
+              <div class="cart-items" id="cartItems">
+                  <p class="cart-empty" role="status">
+                      <span class="cart-empty-icon"
+  aria-hidden="true">🛍️</span>
+                      El carrito está vacío
+                  </p>
+              </div>
+
+              <footer class="cart-footer">
+                  <dl class="summary">
+                      <div class="summary-row">
+                          <dt>Subtotal:</dt>
+                          <dd id="subtotal">$0.00</dd>
+                      </div>
+                      <div class="summary-row">
+                          <dt>IVA (18%):</dt>
+                          <dd id="tax">$0.00</dd>
+                      </div>
+                      <div class="summary-row total">
+                          <dt>Total:</dt>
+                          <dd id="total">$0.00</dd>
+                      </div>
+                  </dl>
+
+                  <div class="action-buttons">
+                      <button type="button" class="btn btn-secondary"
+  onclick="limpiarCarrito()">
+                          Limpiar
+                      </button>
+                      <button type="button" class="btn btn-primary"
+  onclick="procesarPago()">
+                          Pagar
+                      </button>
+                  </div>
+              </footer>
+          </section>
+      </main>
+
+      <script src="../js/pos-logic.js"></script>
+  </body>
+  </html>

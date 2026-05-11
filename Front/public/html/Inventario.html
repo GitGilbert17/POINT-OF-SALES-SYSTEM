@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario - POS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/pos-styles.css">
+    <link rel="stylesheet" href="../css/Administracion.css">
+    <style>
+        .inventario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .btn-agregar {
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .producto-card {
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 80px 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+        }
+        .producto-imagen {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+        .producto-info h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .producto-info p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .producto-stock {
+            text-align: center;
+        }
+        .stock-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .stock-badge.alto {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+        .stock-badge.bajo {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+        .stock-badge.agotado {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        .producto-precio {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .producto-acciones {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .btn-editar {
+            background: var(--surface-light);
+            color: var(--text-secondary);
+        }
+        .btn-editar:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-eliminar {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        .btn-eliminar:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .filtros {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .filtros select, .filtros input {
+            padding: 0.6rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-container {
+            background: var(--surface);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 540px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg), 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem 1.5rem 1rem;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--dark) 0%, var(--surface) 100%);
+            border-radius: 20px 20px 0 0;
+        }
+
+        .modal-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .modal-header h3 {
+            flex: 1;
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            background: var(--surface-light);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        #productoForm {
+            padding: 1.5rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .form-group label i {
+            color: var(--primary);
+            width: 16px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper input,
+        .input-wrapper select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        .input-wrapper input:focus,
+        .input-wrapper select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.15);
+        }
+
+        .input-wrapper input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-prefix {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .input-wrapper input[type="number"] {
+            padding-left: 2rem;
+        }
+
+        .input-suffix {
+            position: absolute;
+            right: 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 1rem;
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        .form-section {
+            margin-top: 1.25rem;
+            padding: 1rem;
+            background: var(--dark);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
+
+        .form-section h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .form-section h4 i {
+            color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 1rem;
+            background: var(--surface-light);
+            color: var(--text-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-cancel:hover {
+            background: var(--dark);
+            color: var(--text-primary);
+            border-color: var(--text-secondary);
+        }
+
+        .btn-save {
+            flex: 2;
+            padding: 1rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-save:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        /* Scrollbar styling for modal */
+        .modal-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-container::-webkit-scrollbar-track {
+            background: var(--dark);
+        }
+
+        .modal-container::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .modal-container::-webkit-scrollbar-thumb:hover {
+            background: var(--surface-light);
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-group.full-width {
+                grid-column: 1;
+            }
+            
+            .modal-header {
+                padding: 1rem;
+            }
+            
+            #productoForm {
+                padding: 1rem;
+            }
+            
+            .modal-actions {
+                flex-direction: column;
+            }
+            
+            .btn-cancel, .btn-save {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="MainDashboard.html" class="logo">POS Web - Inventario</a>
+        <nav>
+            <a href="MainDashboard.html">Inicio</a>
+            <a href="Dashboard.html">POS</a>
+            <a href="Administracion.html">Admin</a>
+            <a href="Inventario.html" class="active">Inventario</a>
+            <a href="Clientes.html">Clientes</a>
+            <a href="Reportes.html">Reportes</a>
+            <a href="Configuracion.html">Config</a>
+        </nav>
+        <section class="user-info">
+            <div class="user-details">
+                <strong>Admin</strong>
+                <span class="role">Administrador</span>
+            </div>
+            <div class="user-avatar">AD</div>
+        </section>
+    </header>
+
+    <main class="container" style="grid-template-columns: 1fr;">
+        <section class="admin-section">
+            <div class="inventario-header">
+                <h2>Gestión de Inventario</h2>
+                <button class="btn-agregar" onclick="mostrarModalProducto()">
+                    <i class="fas fa-plus"></i> Agregar Producto
+                </button>
+            </div>
+            <div class="filtros">
+                <input type="text" id="buscarProducto" placeholder="Buscar producto..." oninput="filtrarProductos()">
+                <select id="filtroCategoria" onchange="filtrarProductos()">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <select id="filtroStock" onchange="filtrarProductos()">
+                    <option value="">Todos los stocks</option>
+                    <option value="alto">Stock alto</option>
+                    <option value="bajo">Stock bajo</option>
+                    <option value="agotado">Agotado</option>
+                </select>
+            </div>
+            <div id="productosList">Cargando productos...</div>
+        </section>
+    </main>
+
+    <!-- Modal Producto -->
+    <div id="productoModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-icon">
+                    <i class="fas fa-box-open"></i>
+                </div>
+                <h3 id="modalTitle">Agregar Producto</h3>
+                <button class="modal-close" onclick="cerrarModalProducto()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="productoForm" onsubmit="guardarProducto(event)">
+                <input type="hidden" id="productoId">
+                
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-barcode"></i> Código *</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="productoCodigo" placeholder="Ej: PRD-001" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-tag"></i> Nombre *</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="productoNombre" placeholder="Nombre del producto" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-align-left"></i> Descripción</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="productoDescripcion" placeholder="Descripción opcional">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-folder"></i> Categoría</label>
+                        <div class="input-wrapper">
+                            <select id="productoCategoria">
+                                <option value="">Seleccionar categoría</option>
+                            </select>
+                            <i class="fas fa-chevron-down select-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4><i class="fas fa-dollar-sign"></i> Información de Precios</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fas fa-calculator"></i> Precio Costo</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input type="number" step="0.01" id="productoPrecioCosto" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-tag"></i> Precio Venta *</label>
+                            <div class="input-wrapper">
+                                <span class="input-prefix">$</span>
+                                <input type="number" step="0.01" id="productoPrecioVenta" required min="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-section">
+                    <h4><i class="fas fa-boxes"></i> Gestión de Stock</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label><i class="fas fa-cubes"></i> Stock Inicial</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="productoStock" value="0" min="0">
+                                <span class="input-suffix">unidades</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-exclamation-triangle"></i> Stock Mínimo</label>
+                            <div class="input-wrapper">
+                                <input type="number" id="productoStockMin" value="10" min="0">
+                                <span class="input-suffix">unidades</span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label><i class="fas fa-percent"></i> ITBIS</label>
+                            <div class="input-wrapper">
+                                <input type="number" step="0.01" id="productoItbis" value="18" min="0" max="100">
+                                <span class="input-suffix">%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-cancel" onclick="cerrarModalProducto()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-save">
+                        <i class="fas fa-save"></i> Guardar Producto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/inventario.js"></script>
+</body>
+</html>

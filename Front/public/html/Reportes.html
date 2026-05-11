@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportes - POS</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../css/pos-styles.css">
+    <link rel="stylesheet" href="../css/Administracion.css">
+    <style>
+        .reportes-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .reportes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .filtros-fecha {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        .filtros-fecha input, .filtros-fecha select {
+            padding: 0.6rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: var(--surface);
+            color: var(--text-primary);
+        }
+        .btn-generar {
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .resumen-tarjetas {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        .tarjeta-resumen {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.25rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        .tarjeta-resumen .valor {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .tarjeta-resumen .etiqueta {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
+        .seccion-tabla {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+        }
+        .seccion-tabla h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .tabla-reportes {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .tabla-reportes th {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        .tabla-reportes td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .tabla-reportes tr:hover {
+            background: var(--dark);
+        }
+        .btn-ver {
+            padding: 0.4rem 0.8rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 500;
+            border-radius: 8px 8px 0 0;
+            transition: var(--transition);
+        }
+        .tab:hover {
+            background: var(--surface-light);
+            color: var(--text-primary);
+        }
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .loading-state, .error-state, .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        .loading-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+        .error-state i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--danger);
+        }
+        .error-state button {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .empty-state {
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="MainDashboard.html" class="logo">POS Web - Reportes</a>
+        <nav>
+            <a href="MainDashboard.html">Inicio</a>
+            <a href="Dashboard.html">POS</a>
+            <a href="Administracion.html">Admin</a>
+            <a href="Inventario.html">Inventario</a>
+            <a href="Clientes.html">Clientes</a>
+            <a href="Reportes.html" class="active">Reportes</a>
+            <a href="Configuracion.html">Config</a>
+        </nav>
+        <section class="user-info">
+            <div class="user-details">
+                <strong>Admin</strong>
+                <span class="role">Administrador</span>
+            </div>
+            <div class="user-avatar">AD</div>
+        </section>
+    </header>
+
+    <main class="container" style="grid-template-columns: 1fr;">
+        <section class="admin-section">
+            <h2>Reportes y Estadísticas</h2>
+            
+            <div class="reportes-container">
+                <div class="reportes-header">
+                    <div class="filtros-fecha">
+                        <label>Desde:</label>
+                        <input type="date" id="fechaDesde">
+                        <label>Hasta:</label>
+                        <input type="date" id="fechaHasta">
+                        <button class="btn-generar" onclick="generarReporte()">Generar</button>
+                    </div>
+                </div>
+
+                <div class="tabs">
+                    <button class="tab active" onclick="cambiarTab('ventas')">Ventas</button>
+                    <button class="tab" onclick="cambiarTab('productos')">Productos Más Vendidos</button>
+                    <button class="tab" onclick="cambiarTab('clientes')">Clientes Top</button>
+                </div>
+
+                <div id="tab-ventas" class="tab-content active">
+                    <div id="resumenVentas" class="resumen-tarjetas"></div>
+                    <div class="seccion-tabla">
+                        <h3>Detalle de Ventas</h3>
+                        <div id="tablaVentas">Cargando...</div>
+                    </div>
+                </div>
+
+                <div id="tab-productos" class="tab-content">
+                    <div class="seccion-tabla">
+                        <h3>Productos Más Vendidos</h3>
+                        <div id="tablaProductos">Cargando...</div>
+                    </div>
+                </div>
+
+                <div id="tab-clientes" class="tab-content">
+                    <div class="seccion-tabla">
+                        <h3>Mejores Clientes</h3>
+                        <div id="tablaClientes">Cargando...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal Recibo -->
+    <div id="reciboModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; overflow-y: auto;">
+        <div style="background: white; color: black; padding: 2rem; border-radius: 8px; width: 90%; max-width: 400px; margin: 2rem auto;">
+            <div id="contenidoRecibo"></div>
+            <div style="margin-top: 1.5rem; display: flex; gap: 1rem;">
+                <button onclick="imprimirRecibo()" style="flex: 1; padding: 0.75rem; background: #2563eb; color: white; border: none; border-radius: 6px; cursor: pointer;">🖨️ Imprimir</button>
+                <button onclick="cerrarRecibo()" style="flex: 1; padding: 0.75rem; background: #64748b; color: white; border: none; border-radius: 6px; cursor: pointer;">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/reportes.js"></script>
+</body>
+</html>

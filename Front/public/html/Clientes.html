@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clientes - POS</title>
+    <link rel="stylesheet" href="../css/pos-styles.css">
+    <link rel="stylesheet" href="../css/Administracion.css">
+    <style>
+        .clientes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .btn-agregar {
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .cliente-card {
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            display: grid;
+            grid-template-columns: 60px 1fr auto auto;
+            gap: 1rem;
+            align-items: center;
+        }
+        .cliente-avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        .cliente-info h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        .cliente-info p {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .cliente-contacto {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+        .cliente-acciones {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+        }
+        .btn-editar {
+            background: var(--surface-light);
+            color: var(--text-secondary);
+        }
+        .btn-editar:hover {
+            background: var(--primary);
+            color: white;
+        }
+        .btn-eliminar {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        .btn-eliminar:hover {
+            background: var(--danger);
+            color: white;
+        }
+        .buscar-box {
+            margin-bottom: 1rem;
+        }
+        .buscar-box input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            background: var(--surface);
+            color: var(--text-primary);
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="MainDashboard.html" class="logo">POS Web - Clientes</a>
+        <nav>
+            <a href="MainDashboard.html">Inicio</a>
+            <a href="Dashboard.html">POS</a>
+            <a href="Administracion.html">Admin</a>
+            <a href="Inventario.html">Inventario</a>
+            <a href="Clientes.html" class="active">Clientes</a>
+            <a href="Reportes.html">Reportes</a>
+            <a href="Configuracion.html">Config</a>
+        </nav>
+        <section class="user-info">
+            <div class="user-details">
+                <strong>Admin</strong>
+                <span class="role">Administrador</span>
+            </div>
+            <div class="user-avatar">AD</div>
+        </section>
+    </header>
+
+    <main class="container" style="grid-template-columns: 1fr;">
+        <section class="admin-section">
+            <div class="clientes-header">
+                <h2>Gestión de Clientes</h2>
+                <button class="btn-agregar" onclick="mostrarModalCliente()">
+                    <i class="fas fa-plus"></i> Agregar Cliente
+                </button>
+            </div>
+            <div class="buscar-box">
+                <input type="text" id="buscarCliente" placeholder="Buscar por nombre, identificación o email..." oninput="filtrarClientes()">
+            </div>
+            <div id="clientesList">Cargando clientes...</div>
+        </section>
+    </main>
+
+    <!-- Modal Cliente -->
+    <div id="clienteModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center;">
+        <div style="background: var(--surface); padding: 2rem; border-radius: 16px; width: 90%; max-width: 500px;">
+            <h3 id="modalTitle" style="margin-bottom: 1.5rem; color: var(--primary);">Agregar Cliente</h3>
+            <form id="clienteFormModal" onsubmit="guardarCliente(event)">
+                <input type="hidden" id="clienteId">
+                <div class="form-group">
+                    <label>Identificación *</label>
+                    <input type="text" id="clienteIdentificacion" required placeholder="001-1234567-8">
+                </div>
+                <div class="form-group">
+                    <label>Nombre *</label>
+                    <input type="text" id="clienteNombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="clienteEmail" placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="clienteTelefono" placeholder="+1 809 555 0100">
+                </div>
+                <div class="form-group">
+                    <label>Dirección</label>
+                    <input type="text" id="clienteDireccion">
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button type="submit" class="btn btn-primary" style="flex: 1;">Guardar</button>
+                    <button type="button" class="btn btn-secondary" onclick="cerrarModalCliente()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/clientes.js"></script>
+</body>
+</html>

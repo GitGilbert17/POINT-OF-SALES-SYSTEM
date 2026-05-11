@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS - Panel Principal</title>
+    <link rel="stylesheet" href="../css/main-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-cash-register"></i>
+                    <span>POS System</span>
+                </div>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">AM</div>
+                <div class="user-info">
+                    <span class="user-name" id="userName">Ana Martínez</span>
+                    <span class="user-role" id="userRole">Administradora</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-page="inicio">
+                    <i class="fas fa-home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="#" class="nav-item" data-page="dashboard">
+                    <i class="fas fa-calculator"></i>
+                    <span>Punto de Venta</span>
+                </a>
+                <a href="#" class="nav-item" data-page="productos">
+                    <i class="fas fa-boxes-stacked"></i>
+                    <span>Inventario</span>
+                </a>
+                <a href="#" class="nav-item" data-page="clientes">
+                    <i class="fas fa-users"></i>
+                    <span>Clientes</span>
+                </a>
+                <a href="#" class="nav-item" data-page="usuarios">
+                    <i class="fas fa-user-gear"></i>
+                    <span>Usuarios</span>
+                </a>
+                <a href="#" class="nav-item" data-page="reportes">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Reportes</span>
+                </a>
+                <a href="#" class="nav-item" data-page="config">
+                    <i class="fas fa-cog"></i>
+                    <span>Configuración</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <button class="menu-toggle" onclick="toggleSidebar()">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="header-title">
+                    <h1 id="pageTitle">Panel Principal</h1>
+                </div>
+                <div class="header-actions">
+                    <div class="datetime" id="datetime"></div>
+                </div>
+            </header>
+
+            <!-- Content Area -->
+            <div class="content-area" id="contentArea">
+                <!-- Quick Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card sales">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="todaySales">$0.00</span>
+                            <span class="stat-label">Ventas Hoy</span>
+                        </div>
+                    </div>
+                    <div class="stat-card orders">
+                        <div class="stat-icon">
+                            <i class="fas fa-receipt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="todayOrders">0</span>
+                            <span class="stat-label">Pedidos Hoy</span>
+                        </div>
+                    </div>
+                    <div class="stat-card clients">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-plus"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalClients">0</span>
+                            <span class="stat-label">Clientes</span>
+                        </div>
+                    </div>
+                    <div class="stat-card products">
+                        <div class="stat-icon">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-info">
+                            <span class="stat-value" id="totalProducts">0</span>
+                            <span class="stat-label">Productos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="quick-actions">
+                    <h2>Acciones Rápidas</h2>
+                    <div class="actions-grid">
+                        <button class="action-card" onclick="navigateTo('dashboard')">
+                            <div class="action-icon pos">
+                                <i class="fas fa-cash-register"></i>
+                            </div>
+                            <span>Nueva Venta</span>
+                        </button>
+                        <button class="action-card" onclick="navigateTo('productos')">
+                            <div class="action-icon inventory">
+                                <i class="fas fa-boxes"></i>
+                            </div>
+                            <span>Ver Inventario</span>
+                        </button>
+                        <button class="action-card" onclick="navigateTo('clientes')">
+                            <div class="action-icon clients">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                            <span>Agregar Cliente</span>
+                        </button>
+                        <button class="action-card" onclick="navigateTo('reportes')">
+                            <div class="action-icon reports">
+                                <i class="fas fa-chart-pie"></i>
+                            </div>
+                            <span>Ver Reportes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Recent Sales -->
+                <div class="recent-section">
+                    <h2>Ventas Recientes</h2>
+                    <div class="recent-list" id="recentSales">
+                        <div class="empty-state">
+                            <i class="fas fa-shopping-bag"></i>
+                            <p>No hay ventas recientes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../js/main-dashboard.js"></script>
+    <script>
+        // Update date/time
+        function updateDateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('datetime').textContent = now.toLocaleDateString('es-ES', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 60000);
+    </script>
+</body>
+</html>
